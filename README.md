@@ -1,5 +1,6 @@
 # AI-Powered-Group-Travel-Planner
 An AI-powered travel planning platform that generates personalized group travel itineraries based on destination, budget, duration, traveler preferences, and group dynamics. The application leverages Large Language Models (LLMs) through the Groq API to create optimized day-wise schedules, estimate travel budgets, recommend activities.
+
 🎯 Key Features
 🧠 AI-Powered Itinerary Generation
 Generates complete day-wise travel plans
@@ -28,6 +29,7 @@ Relaxation Trips
 Nature Exploration
 Nightlife Experiences
 Temple & Heritage Tourism
+
 📊 Interactive Dashboard
 Trip Summary
 Budget Breakdown
@@ -39,6 +41,8 @@ Instant itinerary generation
 Destination research simulation
 Budget optimization
 Activity recommendations
+
+
 🏗️ System Architecture
 Frontend (HTML/CSS/JavaScript)
             │
@@ -59,6 +63,8 @@ JSON Travel Plan Generation
             │
             ▼
 Dynamic UI Rendering
+
+
 🛠️ Technologies Used
 Frontend
 HTML5
