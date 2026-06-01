@@ -1,0 +1,367 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  .app{font-family:'Syne',sans-serif;background:var(--color-background-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;min-height:580px}
+  .header{background:#0f0f1a;padding:1rem 1.5rem;display:flex;align-items:center;gap:12px}
+  .logo-mark{width:38px;height:38px;background:#e8c84a;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#0f0f1a;font-size:20px}
+  .logo-text{font-size:18px;font-weight:800;color:#fff;letter-spacing:-0.5px}
+  .logo-sub{font-size:11px;color:#e8c84a;font-weight:600;letter-spacing:1px;text-transform:uppercase}
+  .header-right{margin-left:auto;display:flex;gap:6px}
+  .phase-badge{font-size:11px;padding:4px 12px;border-radius:20px;font-weight:700;letter-spacing:0.3px;background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.4);border:0.5px solid rgba(255,255,255,0.12)}
+  .phase-badge.active{background:#e8c84a;color:#0f0f1a;border-color:#e8c84a}
+  .main{display:grid;grid-template-columns:290px 1fr;min-height:530px}
+  .sidebar{background:var(--color-background-primary);border-right:0.5px solid var(--color-border-tertiary);padding:1.25rem;display:flex;flex-direction:column;gap:.9rem}
+  .sidebar-section label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--color-text-secondary);display:block;margin-bottom:6px}
+  .input-field{width:100%;padding:8px 11px;font-family:'Syne',sans-serif;font-size:13px;color:var(--color-text-primary);background:var(--color-background-secondary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);outline:none;transition:border-color .15s}
+  .input-field:focus{border-color:var(--color-border-primary)}
+  .traveler-chips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:7px}
+  .chip{display:flex;align-items:center;gap:5px;padding:4px 9px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:20px;font-size:11px;color:var(--color-text-primary)}
+  .chip .rm{cursor:pointer;color:var(--color-text-tertiary);font-size:13px;background:none;border:none;padding:0;line-height:1}
+  .chip .rm:hover{color:var(--color-text-danger)}
+  .chip-add{display:flex;gap:5px}
+  .chip-add input{flex:1;font-size:12px}
+  .btn-sm{padding:7px 11px;font-family:'Syne',sans-serif;font-size:12px;font-weight:600;background:var(--color-background-primary);color:var(--color-text-primary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);cursor:pointer}
+  .btn-sm:hover{background:var(--color-background-secondary)}
+  .pref-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+  .pref-btn{padding:6px 8px;font-family:'Syne',sans-serif;font-size:11px;font-weight:600;background:var(--color-background-secondary);color:var(--color-text-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);cursor:pointer;text-align:center;transition:all .15s}
+  .pref-btn.on{background:#0f0f1a;color:#e8c84a;border-color:#0f0f1a}
+  .pref-btn:hover:not(.on){border-color:var(--color-border-primary);color:var(--color-text-primary)}
+  .btn-go{width:100%;padding:12px;font-family:'Syne',sans-serif;font-size:13px;font-weight:800;letter-spacing:.5px;background:#0f0f1a;color:#e8c84a;border:none;border-radius:var(--border-radius-md);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:auto;transition:opacity .15s}
+  .btn-go:hover{opacity:.85}
+  .btn-go:disabled{opacity:.4;cursor:not-allowed}
+  .content{padding:1.5rem;overflow-y:auto;max-height:530px}
+  .empty-state{min-height:300px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;padding:2rem}
+  .empty-icon{font-size:52px;color:#e8c84a;opacity:.5}
+  .empty-state h3{font-family:'Instrument Serif',serif;font-size:20px;font-weight:400;color:var(--color-text-primary)}
+  .empty-state p{font-size:13px;color:var(--color-text-secondary);max-width:200px;line-height:1.5}
+  .loading-state{display:none;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:3rem;min-height:300px}
+  .ring{width:50px;height:50px;border:3px solid var(--color-border-tertiary);border-top-color:#e8c84a;border-radius:50%;animation:spin .75s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .lsteps{display:flex;flex-direction:column;gap:9px;font-size:12px}
+  .lstep{display:flex;align-items:center;gap:8px;opacity:.25;transition:opacity .4s;color:var(--color-text-secondary)}
+  .lstep.on{opacity:1;color:var(--color-text-primary)}
+  .lstep.ok{opacity:1;color:var(--color-text-success)}
+  .result{display:none}
+  .trip-head{margin-bottom:1.25rem}
+  .trip-head h2{font-family:'Instrument Serif',serif;font-size:24px;font-weight:400;color:var(--color-text-primary);line-height:1.25;margin-bottom:5px}
+  .trip-meta{display:flex;gap:12px;font-size:12px;color:var(--color-text-secondary)}
+  .trip-meta span{display:flex;align-items:center;gap:4px}
+  .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:1.25rem}
+  .scard{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:11px}
+  .slabel{font-size:9px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--color-text-secondary);margin-bottom:3px}
+  .sval{font-size:16px;font-weight:700;color:var(--color-text-primary);line-height:1.2}
+  .ssub{font-size:10px;color:var(--color-text-tertiary);margin-top:2px}
+  .sec-title{font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--color-text-secondary);margin-bottom:9px;display:flex;align-items:center;gap:8px}
+  .sec-title::after{content:'';flex:1;height:.5px;background:var(--color-border-tertiary)}
+  .day-card{background:var(--color-background-primary);border:.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);margin-bottom:8px;overflow:hidden}
+  .day-hdr{display:flex;align-items:center;gap:11px;padding:11px 14px;cursor:pointer;user-select:none}
+  .day-hdr:hover{background:var(--color-background-secondary)}
+  .dnum{width:30px;height:30px;background:#0f0f1a;color:#e8c84a;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0}
+  .dinfo{flex:1}
+  .dtitle{font-size:13px;font-weight:700;color:var(--color-text-primary)}
+  .dtheme{font-size:11px;color:var(--color-text-secondary);margin-top:1px}
+  .dtog{color:var(--color-text-tertiary);font-size:15px;transition:transform .2s}
+  .dtog.open{transform:rotate(180deg)}
+  .day-body{border-top:.5px solid var(--color-border-tertiary);padding:12px 14px;display:none}
+  .day-body.open{display:block}
+  .act{display:flex;gap:11px;padding:7px 0;border-bottom:.5px solid var(--color-border-tertiary)}
+  .act:last-child{border-bottom:none}
+  .atime{font-size:10px;font-weight:700;color:var(--color-text-secondary);min-width:46px;padding-top:2px;letter-spacing:.3px}
+  .adets{flex:1}
+  .aname{font-size:13px;font-weight:600;color:var(--color-text-primary);margin-bottom:2px}
+  .adesc{font-size:11px;color:var(--color-text-secondary);line-height:1.45}
+  .atags{display:flex;gap:4px;margin-top:4px}
+  .tag{font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px}
+  .tf{background:#FAEEDA;color:#854F0B}
+  .tc{background:#EEEDFE;color:#3C3489}
+  .ta{background:#EAF3DE;color:#3B6D11}
+  .tl{background:#E1F5EE;color:#0F6E56}
+  .tt{background:#F1EFE8;color:#444441}
+  .split{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.25rem}
+  .mcard{background:var(--color-background-primary);border:.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:13px}
+  .mtitle{font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--color-text-secondary);margin-bottom:9px}
+  .brow{display:flex;justify-content:space-between;padding:5px 0;font-size:12px;border-bottom:.5px solid var(--color-border-tertiary)}
+  .brow:last-child{border-bottom:none}
+  .bcat{color:var(--color-text-secondary)}
+  .bamt{font-weight:600;color:var(--color-text-primary)}
+  .vrow{display:flex;justify-content:space-between;align-items:center;padding:6px 0;font-size:11px;border-bottom:.5px solid var(--color-border-tertiary)}
+  .vrow:last-child{border-bottom:none}
+  .vname{color:var(--color-text-primary);font-weight:500;flex:1;margin-right:8px}
+  .vwrap{display:flex;align-items:center;gap:6px}
+  .vbar{width:60px;height:3px;background:var(--color-border-tertiary);border-radius:2px;overflow:hidden}
+  .vfill{height:100%;background:#0f0f1a;border-radius:2px;transition:width 1s ease}
+  .vcnt{font-size:10px;color:var(--color-text-secondary)}
+  .tip{background:var(--color-background-info);border:.5px solid var(--color-border-info);border-radius:var(--border-radius-md);padding:11px 13px;font-size:12px;color:var(--color-text-info);line-height:1.55;margin-top:1rem}
+  .tip strong{font-weight:700}
+  .err{background:var(--color-background-danger);border:.5px solid var(--color-border-danger);border-radius:var(--border-radius-md);padding:12px 14px;font-size:12px;color:var(--color-text-danger);line-height:1.6;margin:1rem 0}
+</style>
+
+<h2 style="position:absolute;left:-9999px">My — AI Group Travel Planner</h2>
+
+<div class="app">
+  <div class="header">
+    <div class="logo-mark"><i class="ti ti-compass" aria-hidden="true"></i></div>
+    <div>
+      <div class="logo-text">Travel</div>
+      <div class="logo-sub">AI group travel</div>
+    </div>
+    <div class="header-right">
+      <span class="phase-badge active" id="ph1">1 Plan</span>
+      <span class="phase-badge" id="ph2">2 Generate</span>
+      <span class="phase-badge" id="ph3">3 Result</span>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="sidebar">
+      <div class="sidebar-section">
+        <label>From</label>
+        <input class="input field" id="from" type="text" placeholder="e.g. Goa, Bangkok" value="Goa, Bangkok" />
+      </div>
+      <div class="sidebar-section">
+        <label>Destination</label>
+        <input class="input-field" id="dest" type="text" placeholder="e.g. Goa, Bangkok" value="Kyoto, Japan" />
+      </div>
+      <div class="sidebar-section">
+        <label>Duration</label>
+        <input class="input-field" id="dur" type="text" placeholder="e.g. 5 days" value="4 days" />
+      </div>
+      <div class="sidebar-section">
+        <label>Travelers</label>
+        <div class="traveler-chips" id="chips"></div>
+        <div class="chip-add">
+          <input class="input-field" id="tinput" type="text" placeholder="Add name…" />
+          <button class="btn-sm" onclick="addT()"><i class="ti ti-plus" aria-hidden="true"></i></button>
+        </div>
+      </div>
+      <div class="sidebar-section">
+        <label>Travel Style</label>
+        <div class="pref-grid">
+          <button class="pref-btn on" onclick="togP(this)">🏕 Adventure</button>
+          <button class="pref-btn on" onclick="togP(this)">🏛 Culture</button>
+          <button class="pref-btn" onclick="togP(this)">🍜 Foodie</button>
+          <button class="pref-btn" onclick="togP(this)">🌊 Relaxation</button>
+          <button class="pref-btn" onclick="togP(this)">🎶 Nightlife</button>
+          <button class="pref-btn" onclick="togP(this)">🌿 Nature</button>
+          <button class="pref-btn" onclick="togP(this)">Temples</button>
+        </div>
+      </div>
+      <div class="sidebar-section">
+        <label>Budget per person</label>
+        <input class="input-field" id="bud" type="text" placeholder="e.g. $2000" value="$1500" />
+      </div>
+      <button class="btn-go" id="goBtn" onclick="generate()">
+        <i class="ti ti-sparkles" aria-hidden="true"></i> Generate Trip Plan ↗
+      </button>
+    </div>
+
+    <div class="content">
+      <div class="empty-state" id="empty">
+        <div class="empty-icon"><i class="ti ti-world" aria-hidden="true"></i></div>
+        <h3>Where to next?</h3>
+        <p>Fill in the details and make your trip easy</p>
+      </div>
+      <div class="loading-state" id="loader">
+        <div class="ring"></div>
+        <div class="lsteps">
+          <div class="lstep" id="s1"><i class="ti ti-circle" style="font-size:13px" aria-hidden="true"></i> Researching destination…</div>
+          <div class="lstep" id="s2"><i class="ti ti-circle" style="font-size:13px" aria-hidden="true"></i> Building daily activities…</div>
+          <div class="lstep" id="s3"><i class="ti ti-circle" style="font-size:13px" aria-hidden="true"></i> Estimating budget…</div>
+          <div class="lstep" id="s4"><i class="ti ti-circle" style="font-size:13px" aria-hidden="true"></i> Finalising Budget…</div>
+        </div>
+      </div>
+      <div class="result" id="result"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const GROQ_KEY = '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';
+let travelers = ['Priya','Ravi','Sasha','Joel'];
+let styles = new Set(['🏕 Adventure','🏛 Culture']);
+
+function renderChips(){
+  document.getElementById('chips').innerHTML = travelers.map((t,i)=>
+    `<div class="chip">${t}<button class="rm" onclick="rmT(${i})">×</button></div>`
+  ).join('');
+}
+function addT(){
+  const inp=document.getElementById('tinput');
+  const n=inp.value.trim();
+  if(n&&!travelers.includes(n)){travelers.push(n);renderChips();}
+  inp.value='';
+}
+function rmT(i){travelers.splice(i,1);renderChips();}
+document.getElementById('tinput').addEventListener('keydown',e=>{if(e.key==='Enter')addT();});
+function togP(b){b.classList.toggle('on');const l=b.textContent.trim();b.classList.contains('on')?styles.add(l):styles.delete(l);}
+renderChips();
+
+function setPhase(n){[1,2,3].forEach(i=>document.getElementById('ph'+i).classList.toggle('active',i===n));}
+
+async function generate(){
+  const from=document.getElementById('from').value.trim()||'Goa, Bangkok';
+  const dest=document.getElementById('dest').value.trim()||'Kyoto, Japan';
+  const dur=document.getElementById('dur').value.trim()||'4 days';
+  const bud=document.getElementById('bud').value.trim()||'$1500';
+  const sty=[...styles].join(', ')||'Adventure, Culture';
+  const names=travelers.join(', ')||'the group';
+  const nd=parseInt(dur)||4;
+
+  document.getElementById('empty').style.display='none';
+  document.getElementById('result').style.display='none';
+  document.getElementById('loader').style.display='flex';
+  document.getElementById('goBtn').disabled=true;
+  setPhase(2);
+
+  const ss=['s1','s2','s3','s4'];
+  let si=0;
+  const t=setInterval(()=>{
+    if(si>0){document.getElementById(ss[si-1]).classList.remove('on');document.getElementById(ss[si-1]).classList.add('ok');}
+    if(si<ss.length){document.getElementById(ss[si]).classList.add('on');si++;}
+    else clearInterval(t);
+  },900);
+
+  const prompt=`You are an expert group travel planner. Plan a ${dur} trip to ${dest} for ${travelers.length} travelers (${names}). Styles: ${sty}. Budget per person: ${bud}.
+
+Return ONLY valid JSON, no markdown, no explanation:
+{
+  "destination":"City, Country",
+  "tagline":"inspiring tagline max 8 words",
+  "totalDays":${nd},
+  "groupSize":${travelers.length},
+  "estimatedBudget":"total estimate",
+  "highlights":["h1","h2","h3"],
+  "days":[
+    {"dayNum":1,"title":"Day title","theme":"theme max 5 words",
+     "activities":[{"time":"9:00 AM","name":"name","description":"1-2 sentences","tag":"culture"}]}
+  ],
+  "budget":{"Accommodation":"$X","Food":"$X","Activities":"$X","Transport":"$X","Misc":"$X"},
+  "groupVotes":[{"item":"activity","votes":3,"total":${travelers.length}}],
+  "aiTip":"One specific useful tip for this group and destination."
+}
+Exactly ${nd} days, 4-5 activities each. Tags: food, culture, adventure, leisure, transport only.`;
+
+  try{
+    const res=await fetch('https://api.groq.com/openai/v1/chat/completions',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+GROQ_KEY},
+      body:JSON.stringify({
+        model:'llama-3.3-70b-versatile',
+        temperature:0.7,
+        max_tokens:4000,
+        messages:[{role:'user',content:prompt}]
+      })
+    });
+
+    clearInterval(t);
+    ss.forEach(s=>{document.getElementById(s).classList.remove('on');document.getElementById(s).classList.add('ok');});
+
+    if(!res.ok){
+      const e=await res.json().catch(()=>({}));
+      throw new Error(e?.error?.message||'API error '+res.status);
+    }
+
+    const data=await res.json();
+    const raw=data.choices?.[0]?.message?.content||'';
+    let trip;
+    try{
+      const clean=raw.replace(/```json|```/g,'').trim();
+      const s=clean.indexOf('{'),e=clean.lastIndexOf('}');
+      trip=JSON.parse(clean.slice(s,e+1));
+    }catch(ex){throw new Error('Could not parse response. Please try again.');}
+
+    setTimeout(()=>{
+      document.getElementById('loader').style.display='none';
+      renderResult(trip);
+      setPhase(3);
+      document.getElementById('goBtn').disabled=false;
+    },300);
+
+  }catch(err){
+    clearInterval(t);
+    document.getElementById('loader').style.display='none';
+    document.getElementById('goBtn').disabled=false;
+    const r=document.getElementById('result');
+    r.style.display='block';
+    r.innerHTML=`<div class="err"><strong>Error:</strong> ${err.message}</div>`;
+    setPhase(1);
+  }
+}
+
+function tClass(tag){return{food:'tf',culture:'tc',adventure:'ta',leisure:'tl',transport:'tt'}[tag]||'tl';}
+function tLabel(tag){return{food:'🍜 Food',culture:'🏛 Culture',adventure:'⛰ Adventure',leisure:'🌊 Leisure',transport:'🚆 Transport'}[tag]||tag;}
+
+function renderResult(trip){
+  const r=document.getElementById('result');
+
+  const daysH=(trip.days||[]).map((day,di)=>`
+    <div class="day-card">
+      <div class="day-hdr" onclick="togDay(${di})">
+        <div class="dnum">D${day.dayNum||di+1}</div>
+        <div class="dinfo">
+          <div class="dtitle">${day.title||'Day '+(di+1)}</div>
+          <div class="dtheme">${day.theme||''}</div>
+        </div>
+        <i class="ti ti-chevron-down dtog ${di===0?'open':''}" id="tog${di}" aria-hidden="true"></i>
+      </div>
+      <div class="day-body ${di===0?'open':''}" id="db${di}">
+        ${(day.activities||[]).map(a=>`
+          <div class="act">
+            <div class="atime">${a.time||''}</div>
+            <div class="adets">
+              <div class="aname">${a.name||''}</div>
+              <div class="adesc">${a.description||''}</div>
+              <div class="atags"><span class="tag ${tClass(a.tag)}">${tLabel(a.tag)}</span></div>
+            </div>
+          </div>`).join('')}
+      </div>
+    </div>`).join('');
+
+  const budH=Object.entries(trip.budget||{}).map(([k,v])=>
+    `<div class="brow"><span class="bcat">${k}</span><span class="bamt">${v}</span></div>`
+  ).join('');
+
+  const votH=(trip.groupVotes||[]).map(v=>{
+    const p=Math.round((v.votes/v.total)*100);
+    return`<div class="vrow">
+      <span class="vname">${v.item}</span>
+      <div class="vwrap">
+        <div class="vbar"><div class="vfill" style="width:0%" data-p="${p}%"></div></div>
+        <span class="vcnt">${v.votes}/${v.total}</span>
+      </div>
+    </div>`;
+  }).join('');
+
+  r.innerHTML=`
+    <div class="trip-head">
+      <h2>${trip.destination||'Your Trip'} — <em>${trip.tagline||''}</em></h2>
+      <div class="trip-meta">
+        <span><i class="ti ti-calendar" style="font-size:12px" aria-hidden="true"></i> ${trip.totalDays||'?'} days</span>
+        <span><i class="ti ti-users" style="font-size:12px" aria-hidden="true"></i> ${trip.groupSize||travelers.length} travelers</span>
+        <span><i class="ti ti-wallet" style="font-size:12px" aria-hidden="true"></i> ${trip.estimatedBudget||''} / person</span>
+      </div>
+    </div>
+    <div class="stats-row">
+      ${(trip.highlights||[]).slice(0,3).map(h=>`
+        <div class="scard"><div class="slabel">Highlight</div><div class="sval" style="font-size:12px;line-height:1.35">${h}</div></div>`).join('')}
+      <div class="scard"><div class="slabel">Group</div><div class="sval">${trip.groupSize||travelers.length}</div><div class="ssub">travelers</div></div>
+    </div>
+    <div class="sec-title">Day by day</div>
+    ${daysH}
+    <div class="split" style="margin-top:1.1rem">
+      <div class="mcard"><div class="mtitle">Budget breakdown</div>${budH}</div>
+      <div class="mcard"><div class="mtitle">Group votes</div>${votH}</div>
+    </div>
+    <div class="tip"><strong>AI tip:</strong> ${trip.aiTip||''}</div>`;
+
+  r.style.display='block';
+  setTimeout(()=>{r.querySelectorAll('.vfill').forEach(el=>{el.style.width=el.dataset.p;});},150);
+}
+
+function togDay(i){
+  const b=document.getElementById('db'+i),tg=document.getElementById('tog'+i);
+  const o=b.classList.contains('open');
+  b.classList.toggle('open',!o);tg.classList.toggle('open',!o);
+}
+</script>
